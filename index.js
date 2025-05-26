@@ -1,61 +1,67 @@
-require('dotenv').config();
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const { Pool } = require('pg');
-const cors = require('cors');
+require("dotenv").config();
+const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
+const { Pool } = require("pg");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST']
-  }
+    origin: "https://https://chat-frontend-lake-two.vercel.app",
+    methods: ["GET", "POST"],
+  },
 });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://https://chat-frontend-lake-two.vercel.app",
+  })
+);
 app.use(express.json());
 
 // PostgreSQL connection
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'Chat',
-  password: process.env.DB_PASSWORD || '090904',
+  user: process.env.DB_USER || "postgres",
+  host: process.env.DB_HOST || "localhost",
+  database: process.env.DB_NAME || "Chat",
+  password: process.env.DB_PASSWORD || "090904",
   port: process.env.DB_PORT || 5432,
 });
 
 // Socket.IO connection
-io.on('connection', (socket) => {
-  console.log('New client connected');
+io.on("connection", (socket) => {
+  console.log("New client connected");
 
-  socket.on('message', async (message) => {
+  socket.on("message", async (message) => {
     try {
       const { content } = message;
       const result = await pool.query(
-        'INSERT INTO messages (content) VALUES ($1) RETURNING *',
+        "INSERT INTO messages (content) VALUES ($1) RETURNING *",
         [content]
       );
-      io.emit('message', result.rows[0]);
+      io.emit("message", result.rows[0]);
     } catch (error) {
-      console.error('Error saving message:', error);
+      console.error("Error saving message:", error);
     }
   });
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
   });
 });
 
 // Endpoint to fetch all messages
-app.get('/messages', async (req, res) => {
+app.get("/messages", async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM messages ORDER BY created_at ASC');
+    const result = await pool.query(
+      "SELECT * FROM messages ORDER BY created_at ASC"
+    );
     res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching messages:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching messages:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
