@@ -21,6 +21,10 @@ app.use(
 );
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Backend is working!");
+});
+
 // PostgreSQL connection
 const pool = new Pool({
   user: process.env.DB_USER || "postgres",
