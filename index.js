@@ -9,14 +9,14 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "https://chat-frontend-three-beige.vercel.app",
+    origin: "https://https://chat-frontend-chi-six.vercel.app",
     methods: ["GET", "POST"],
   },
 });
 
 app.use(
   cors({
-    origin: "https://chat-frontend-three-beige.vercel.app",
+    origin: "https://https://chat-frontend-chi-six.vercel.app",
   })
 );
 app.use(express.json());
